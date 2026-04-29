@@ -1,7 +1,54 @@
+// use std::fs;
+// use std::io::Write;
+
+// const FILE_PATH: &str = "./task_list.json";
+
+// struct format{
+//     todo: String,
+//     data: Option<String>,
+//     status: Option<String>,
+// }
+
+// pub fn check_and_create_file() {
+
+//     if fs::exists(FILE_PATH).expect("Can't check if file exists") {
+//         println!("File already exists.");
+//     } else {
+//         fs::write(FILE_PATH, "").expect("Can't create file");
+//     }
+// }
+
+// pub fn write_task(task: &str) {
+
+//     if fs::exists(FILE_PATH).expect("Can't check if file exists") {
+//         let mut file = fs::OpenOptions::new()
+//             .write(true)
+//             .append(true)
+//             .open(FILE_PATH)
+//             .expect("Can't open file");
+//         writeln!(file, "{}", task).expect("Can't write to file");
+//     } else {
+//         check_and_create_file();
+//         write_task(task);
+//     }
+// }
+
+
 use std::fs;
 use std::io::Write;
+use serde_json;
+use serde::{Serialize, Deserialize};
+use chrono::prelude::*;
 
 const FILE_PATH: &str = "./task_list.json";
+
+#[derive(Serialize, Deserialize, Debug, Default)]
+struct Task {
+    id: u32,
+    todo: String,
+    data: Option<String>,
+    status: Option<String>,
+}
 
 pub fn check_and_create_file() {
 
@@ -12,17 +59,30 @@ pub fn check_and_create_file() {
     }
 }
 
-pub fn write_task(task: &str) {
-
-    if fs::exists(FILE_PATH).expect("Can't check if file exists") {
-        let mut file = fs::OpenOptions::new()
-            .write(true)
-            .append(true)
-            .open(FILE_PATH)
-            .expect("Can't open file");
-        writeln!(file, "{}", task).expect("Can't write to file");
+pub fn save_task(task: &str) {
+    let mut tasks: Vec<Task> = if fs::metadata(FILE_PATH).is_ok() {
+        let data = fs::read_to_string(FILE_PATH).expect("Can't read file");
+        serde_json::from_str(&data).unwrap_or_else(|_| vec![])
     } else {
-        check_and_create_file();
-        write_task(task);
+        vec![]
+    };
+
+    let parts: Vec<&str> = task.split(",").map(|s| s.trim()).collect();
+    let now_ster = Utc::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    if parts.len() >= 1 {
+        let new_task = Task {
+            id: tasks.len() as u32,
+            todo: parts[0].to_string(),
+            data: Some(parts.get(1).map(|s| s.to_string()).unwrap_or(now_ster)),
+            status: Some("pending".to_string()),
+        };
+        tasks.push(new_task);
+    }else{
+        println!("Invalid task format. Please provide a task in the format: <todo> <data>");
+        return;
     }
+
+    let json_data = serde_json::to_string_pretty(&tasks).expect("แปลงเป็น JSON ไม่ได้");
+    let mut file = fs::File::create(FILE_PATH).expect("Can't create file");
+    writeln!(file, "{}", json_data).expect("Can't write to file");
 }

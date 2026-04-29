@@ -1,6 +1,7 @@
-use crate::writer_file::write_task;
+use crate::writer_file::*;
 use std::io::Write;
 use crate::list_to_do::list_task;
+
 
 pub fn check_command(command: &str) {
     match command {
@@ -20,7 +21,8 @@ fn todo_command() {
     let work: Vec<&str> = input.split_whitespace().collect();
     let outtask = work.join("\n");
 
-    // println!("Task added:{}", input.replace(" ", "\n"));
+    println!("Task added:{}", input.replace(" ", "\n"));
 
-    write_task(&outtask);
+    // write_task(&outtask);
+    save_task(&outtask);
 }
