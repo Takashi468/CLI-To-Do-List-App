@@ -43,11 +43,11 @@ use chrono::prelude::*;
 const FILE_PATH: &str = "./task_list.json";
 
 #[derive(Serialize, Deserialize, Debug, Default)]
-struct Task {
-    id: u32,
-    todo: String,
-    data: Option<String>,
-    status: Option<String>,
+pub struct Task {
+    pub id: u32,
+    pub todo: String,
+    pub data: Option<String>,
+    pub status: Option<String>,
 }
 
 pub fn check_and_create_file() {
