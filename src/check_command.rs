@@ -21,8 +21,8 @@ fn todo_command() {
     let work: Vec<&str> = input.split_whitespace().collect();
     let outtask = work.join("\n");
 
-    println!("Task added:{}", input.replace(" ", "\n"));
-
+    // println!("Task added:{}", input.replace(" ", "\n"));
+    println!("Task added:{}", input);
     // write_task(&outtask);
     save_task(&outtask);
 }
