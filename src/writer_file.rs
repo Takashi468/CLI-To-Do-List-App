@@ -86,6 +86,44 @@ pub fn save_task(task: &str) {
             }else if !date_input.is_empty(){
                 task_date = date_input.to_string();
             }
+        }else if input_lower.contains("year"){
+            let years_count: i64 = input_lower
+                .split_whitespace()
+                .next()
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(0);
+            if let Some(future_date) = Utc::now().checked_add_signed(chrono::Duration::days(years_count * 365)) {
+                task_date = future_date.format("%d-%m-%Y").to_string();
+            }else if !date_input.is_empty(){
+                task_date = date_input.to_string();
+            }
+        }else if input_lower.contains("month") {
+            let months_count: i64 = input_lower
+                .split_whitespace()
+                .next()
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(0);
+            if let Some(future_date) = Utc::now().checked_add_signed(chrono::Duration::days(months_count * 30)) {
+                task_date = future_date.format("%d-%m-%Y").to_string();
+            }else if !date_input.is_empty(){
+                task_date = date_input.to_string();
+            }
+        }else if input_lower.contains("week") {
+            let weeks_count: i64 = input_lower
+                .split_whitespace()
+                .next()
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(0);
+            if let Some(future_date) = Utc::now().checked_add_signed(chrono::Duration::days(weeks_count * 7)) {
+                task_date = future_date.format("%d-%m-%Y").to_string();
+            }else if !date_input.is_empty(){
+                task_date = date_input.to_string();
+            }
+        }else if input_lower.contains("now"){
+            let now = Utc::now();
+            task_date = now.format("%d-%m-%Y").to_string();
+        }else {
+            println!("Invalid date format. Please use DD-MM-YYYY.");
         }
 
         if !parts.is_empty() && !parts[0].is_empty(){
@@ -101,8 +139,19 @@ pub fn save_task(task: &str) {
             println!("Invalid task format. Please provide a task in the format: <todo> <data>");
             return;
         }
-
     }
+
+    // if let Some(status_input) = parts.get(2) {
+    //     // new_task.status = Some(status_input.to_string());
+    //     let input_lower = status_input.to_lowercase();
+    //     if input_lower.contains("done") {
+    //         new_task.status = Some(input_lower.trim_start_matches("✅ Done").trim().to_string());
+    //     } else if input_lower.contains("pending") {
+    //         new_task.status = Some(input_lower.trim_start_matches("⏳ Pending").trim().to_string());
+    //     } else {
+    //         new_task.status = Some(status_input.to_string());
+    //     }
+    // }
 
     // if parts.len() >= 1 {
     //     let max_id = tasks.iter().map(|t| t.id).max().unwrap_or(0);

@@ -1,8 +1,10 @@
 mod check_command;
 mod writer_file;
 mod list_to_do;
+mod update_status;
 use check_command::check_command;
 use std::io::{self, Write};
+
 
 fn main() {
     let mut input = String::new();
