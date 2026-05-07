@@ -2,6 +2,7 @@ use crate::writer_file::*;
 use std::io::Write;
 use crate::list_to_do::list_task;
 use crate::update_status::update_task_status;
+use crate::help_command::help;
 
 
 pub fn check_command(full_input: &str) {
@@ -30,6 +31,7 @@ pub fn check_command(full_input: &str) {
             //     update_task_status(args, status);
             // }
         },
+        "help" => help(),
         "list" => list_task(),
         "end" => return,
         _ => println!("Invalid command: {}", command),
