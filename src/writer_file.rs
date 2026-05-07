@@ -139,6 +139,23 @@ pub fn save_task(task: &str) {
             println!("Invalid task format. Please provide a task in the format: <todo> <data>");
             return;
         }
+    }else{
+        if let Some(data_input) = parts.get(0) {
+            let input_lower = data_input.to_lowercase();
+            if !parts.is_empty() && !parts[0].is_empty(){
+                let max_id = tasks.iter().map(|t| t.id).max().unwrap_or(0);
+                let new_task = Task{
+                    id: max_id + 1,
+                    todo: parts[0].to_string(),
+                    data: Some(task_date),
+                    status: Some("⏳ Pending".to_string()),
+                };
+                tasks.push(new_task);
+            }
+            println!("{}", input_lower);
+        } else {
+            println!("No data provided.");
+        }
     }
 
     // if let Some(status_input) = parts.get(2) {
