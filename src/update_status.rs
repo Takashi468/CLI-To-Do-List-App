@@ -1,13 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::fs;
-
-#[derive(Deserialize, Serialize)]
-struct Task {
-    id: u32,
-    todo: String,
-    data: String,
-    status: String,
-}
+use crate::models::{Task, FILE_PATH};
 
 pub fn update_task_status(task_id: &str, new_status: &str) {
     let target_id: u32 = match task_id.parse(){
@@ -18,8 +11,8 @@ pub fn update_task_status(task_id: &str, new_status: &str) {
         }
     };
 
-    let file_path = "./task_list.json";
-    let data = fs::read_to_string(file_path).expect("Unable to read file");
+    // let file_path = "./task_list.json";
+    let data = fs::read_to_string(FILE_PATH).expect("Unable to read file");
 
     let mut tasks: Vec<Task> = serde_json::from_str(&data).expect("Unable to parse JSON");
 
@@ -44,7 +37,7 @@ pub fn update_task_status(task_id: &str, new_status: &str) {
 
     // 5. แปลงกลับเป็น JSON และเขียนลงไฟล์ (Serialization)
     let updated_json = serde_json::to_string_pretty(&tasks).expect("Failed to serialize");
-    fs::write(file_path, updated_json).expect("Unable to write file");
+    fs::write(FILE_PATH, updated_json).expect("Unable to write file");
 
     println!("Task {} status updated to '{}' successfully!", target_id, new_status);
 }

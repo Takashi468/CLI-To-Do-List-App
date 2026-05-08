@@ -3,6 +3,7 @@ mod writer_file;
 mod list_to_do;
 mod update_status;
 mod help_command;
+mod mod;
 
 use check_command::check_command;
 use std::io::{self, Write};

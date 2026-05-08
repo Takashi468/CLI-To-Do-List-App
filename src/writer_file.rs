@@ -40,16 +40,8 @@ use serde_json;
 use serde::{Serialize, Deserialize};
 use chrono::prelude::*;
 use chrono::{Duration, Utc};
+use crate::models::{Task, FILE_PATH};
 
-const FILE_PATH: &str = "./task_list.json";
-
-#[derive(Serialize, Deserialize, Debug, Default)]
-pub struct Task {
-    pub id: u32,
-    pub todo: String,
-    pub data: Option<String>,
-    pub status: Option<String>,
-}
 
 pub fn check_and_create_file() {
 
@@ -74,56 +66,52 @@ pub fn save_task(task: &str) {
     if let Some(date_input) = parts.get(1) {
         let input_lower = date_input.to_lowercase();
 
-        if input_lower.contains("day") {
-            let days_count: i64 = input_lower
-                .split_whitespace()
-                .next()
-                .and_then(|s| s.parse().ok())
-                .unwrap_or(0);
-            if let Some(future_date) = Utc::now().checked_add_signed(chrono::Duration::days(days_count)) {
-                task_date = future_date.format("%d-%m-%Y").to_string();
+        let count: i64 = input_lower
+            .split_whitespace()
+            .next()
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(0);
 
-            }else if !date_input.is_empty(){
-                task_date = date_input.to_string();
+        match input_lower.as_str(){
+            input_text if input_text.contains("day") || input_text.contains("days") => {
+                let days_count: i64 = count;
+                if let Some(future_date) = Utc::now().checked_add_signed(chrono::Duration::days(days_count)) {
+                    task_date = future_date.format("%d-%m-%Y").to_string();
+                } else if !date_input.is_empty() {
+                    task_date = date_input.to_string();
+                }
+            },
+            input_text if input_text.contains("year") || input_text.contains("years") => {
+                let years_count: i64 = count;
+                if let Some(future_date) = Utc::now().checked_add_signed(chrono::Duration::days(years_count * 365)) {
+                    task_date = future_date.format("%d-%m-%Y").to_string();
+                } else if !date_input.is_empty() {
+                    task_date = date_input.to_string();
+                }
+            },
+            input_text if input_text.contains("month") || input_text.contains("months") => {
+                let months_count: i64 = count;
+                if let Some(future_date) = Utc::now().checked_add_signed(chrono::Duration::days(months_count * 30)) {
+                    task_date = future_date.format("%d-%m-%Y").to_string();
+                } else if !date_input.is_empty() {
+                    task_date = date_input.to_string();
+                }
+            },
+            input_text if input_text.contains("week") || input_text.contains("weeks") => {
+                let weeks_count: i64 = count;
+                if let Some(future_date) = Utc::now().checked_add_signed(chrono::Duration::days(weeks_count * 7)) {
+                    task_date = future_date.format("%d-%m-%Y").to_string();
+                } else if !date_input.is_empty() {
+                    task_date = date_input.to_string();
+                }
+            },
+            input_text if input_text.contains("now") => {
+                let now = Utc::now();
+                task_date = now.format("%d-%m-%Y").to_string();
+            },
+            _ => {
+                println!("Invalid date format. Please use DD-MM-YYYY.");
             }
-        }else if input_lower.contains("year"){
-            let years_count: i64 = input_lower
-                .split_whitespace()
-                .next()
-                .and_then(|s| s.parse().ok())
-                .unwrap_or(0);
-            if let Some(future_date) = Utc::now().checked_add_signed(chrono::Duration::days(years_count * 365)) {
-                task_date = future_date.format("%d-%m-%Y").to_string();
-            }else if !date_input.is_empty(){
-                task_date = date_input.to_string();
-            }
-        }else if input_lower.contains("month") {
-            let months_count: i64 = input_lower
-                .split_whitespace()
-                .next()
-                .and_then(|s| s.parse().ok())
-                .unwrap_or(0);
-            if let Some(future_date) = Utc::now().checked_add_signed(chrono::Duration::days(months_count * 30)) {
-                task_date = future_date.format("%d-%m-%Y").to_string();
-            }else if !date_input.is_empty(){
-                task_date = date_input.to_string();
-            }
-        }else if input_lower.contains("week") {
-            let weeks_count: i64 = input_lower
-                .split_whitespace()
-                .next()
-                .and_then(|s| s.parse().ok())
-                .unwrap_or(0);
-            if let Some(future_date) = Utc::now().checked_add_signed(chrono::Duration::days(weeks_count * 7)) {
-                task_date = future_date.format("%d-%m-%Y").to_string();
-            }else if !date_input.is_empty(){
-                task_date = date_input.to_string();
-            }
-        }else if input_lower.contains("now"){
-            let now = Utc::now();
-            task_date = now.format("%d-%m-%Y").to_string();
-        }else {
-            println!("Invalid date format. Please use DD-MM-YYYY.");
         }
 
         if !parts.is_empty() && !parts[0].is_empty(){

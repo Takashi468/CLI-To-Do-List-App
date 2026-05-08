@@ -1,9 +1,8 @@
 use std::fs;
 use std::io;
 use comfy_table::Table;
-use crate::writer_file::Task;
-
-const FILE_PATH: &str = "./task_list.json";
+// use crate::writer_file::Task;
+use crate::models::{FILE_PATH, Task};
 
 pub fn list_task() {
     if fs::exists(FILE_PATH).expect("Failed to check if file exists") {
